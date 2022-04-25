@@ -1,14 +1,12 @@
-import { Type } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsUUID, ValidateNested } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsUUID } from 'class-validator';
 import {
-    Authorized, Body, Delete, Get, JsonController, OnUndefined, Param, Post, Put, Req
+    Body, Delete, Get, JsonController, OnUndefined, Param, Post, Put, Req
 } from 'routing-controllers';
-import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
+import { ResponseSchema } from 'routing-controllers-openapi';
 
 import { UserNotFoundError } from '../errors/UserNotFoundError';
 import { User } from '../models/User';
 import { UserService } from '../services/UserService';
-import { PetResponse } from './PetController';
 
 class BaseUser {
     @IsNotEmpty()
@@ -28,10 +26,6 @@ class BaseUser {
 export class UserResponse extends BaseUser {
     @IsUUID()
     public id: string;
-
-    @ValidateNested({ each: true })
-    @Type(() => PetResponse)
-    public pets: PetResponse[];
 }
 
 class CreateUserBody extends BaseUser {
@@ -39,9 +33,8 @@ class CreateUserBody extends BaseUser {
     public password: string;
 }
 
-@Authorized()
+
 @JsonController('/users')
-@OpenAPI({ security: [{ basicAuth: [] }] })
 export class UserController {
 
     constructor(
@@ -70,6 +63,7 @@ export class UserController {
     @Post()
     @ResponseSchema(UserResponse)
     public create(@Body() body: CreateUserBody): Promise<User> {
+        console.log('Find one user');
         const user = new User();
         user.email = body.email;
         user.firstName = body.firstName;

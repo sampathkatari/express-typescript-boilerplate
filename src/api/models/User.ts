@@ -1,9 +1,7 @@
 import * as bcrypt from 'bcrypt';
-import { Exclude } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
-import { BeforeInsert, Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-
-import { Pet } from './Pet';
+import { BeforeInsert, Column, Entity, PrimaryColumn } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity()
 export class User {
@@ -44,15 +42,12 @@ export class User {
 
     @IsNotEmpty()
     @Column()
-    @Exclude()
     public password: string;
 
     @IsNotEmpty()
     @Column()
     public username: string;
 
-    @OneToMany(type => Pet, pet => pet.user)
-    public pets: Pet[];
 
     public toString(): string {
         return `${this.firstName} ${this.lastName} (${this.email})`;
@@ -61,6 +56,7 @@ export class User {
     @BeforeInsert()
     public async hashPassword(): Promise<void> {
         this.password = await User.hashPassword(this.password);
+        this.id = uuidv4();
     }
 
 }

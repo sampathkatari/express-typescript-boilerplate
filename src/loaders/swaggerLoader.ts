@@ -1,4 +1,3 @@
-import { defaultMetadataStorage as classTransformerMetadataStorage } from 'class-transformer/storage';
 import { getFromContainer, MetadataStorage } from 'class-validator';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import basicAuth from 'express-basic-auth';
@@ -17,10 +16,7 @@ export const swaggerLoader: MicroframeworkLoader = (settings: MicroframeworkSett
             MetadataStorage
         ) as any;
 
-        const schemas = validationMetadatasToSchemas(validationMetadatas, {
-            classTransformerMetadataStorage,
-            refPointerPrefix: '#/components/schemas/',
-        });
+        const schemas = validationMetadatasToSchemas(validationMetadatas);
 
         const swaggerFile = routingControllersToSpec(
             getMetadataArgsStorage(),
